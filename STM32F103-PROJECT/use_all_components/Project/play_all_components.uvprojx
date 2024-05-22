@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_HD,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\Libraries\CMSIS;..\Libraries\STM32F10x_StdPeriph_Driver\inc;..\User;..\User\led</IncludePath>
+              <IncludePath>..\Libraries\CMSIS;..\Libraries\STM32F10x_StdPeriph_Driver\inc;..\User;..\User\led;..\User\key;..\User\utils</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -422,6 +422,16 @@
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\main.c</FilePath>
+            </File>
+            <File>
+              <FileName>key.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\key\key.c</FilePath>
+            </File>
+            <File>
+              <FileName>utils.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\utils\utils.c</FilePath>
             </File>
           </Files>
         </Group>
