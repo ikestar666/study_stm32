@@ -1,7 +1,11 @@
-#include "stm32f10x.h" // 相当于51单片机中的  #include <reg51.h>
 #include "key.h"
 #include "led.h"
+#include "stm32f10x.h" // 相当于51单片机中的  #include <reg51.h>
 #include "utils.h"
+#include "exti.h"
+
+// 定义全局变量
+volatile int ErrorKeyPressed = 0;
 
 void TestLED(void)
 {
@@ -49,6 +53,13 @@ int PressKey(GPIO_TypeDef *KEYx_PORT, uint16_t KEYx_PIN,
         if (TimePassed >= WaitTime)
         {
             Blink(LED_RED_PORT, LED_RED_PIN, 6, 500000);
+            return 0;
+        }
+        // 如果错误的按键被按下，则需要重新输入密码
+        if (ErrorKeyPressed == 1)
+        {
+            Blink(LED_RED_PORT, LED_RED_PIN, 6, 500000);
+            ErrorKeyPressed = 0;
             return 0;
         }
     }
@@ -119,16 +130,22 @@ int PassCodeCheck()
     int i;
     for (i = 0; i < 6; i++)
     {
+        // 需要设置监听哪个按键的中断
         if (PassCode[i] == 1)
         {
             Key_xPort = KEY_1_PORT;
             Key_xPin = KEY_1_PIN;
+            KEY1_EXTI_Cmd(DISABLE);
+            KEY2_EXTI_Cmd(ENABLE);
         }
         else
         {
             Key_xPort = KEY_2_PORT;
             Key_xPin = KEY_2_PIN;
+            KEY1_EXTI_Cmd(ENABLE);
+            KEY2_EXTI_Cmd(DISABLE);
         }
+
         // 等待按到正确的按钮，或者超时
         if (PressKey(Key_xPort, Key_xPin, LED_RED_PORT, LED_RED_PIN))
         {
@@ -184,6 +201,8 @@ int main(void)
         1, 3, 2, 1, 2, 3, 2, 1, 6, 5, 6, 1, 3, 2, 1, 2, 3, 2, 1
     };
 
+    KEY_NVIC_Config();
+    KEY_EXTI_Init();
     LEDInit();
     KeyInit();
 
@@ -198,5 +217,4 @@ int main(void)
     }
 
     Blink(LED_RED_PORT, LED_RED_PIN, 3, 2000000);
-
 }
