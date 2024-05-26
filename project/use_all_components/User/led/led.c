@@ -45,9 +45,9 @@ void Blink(GPIO_TypeDef *LEDx_PORT, uint16_t LEDx_PIN, uint16_t Times,
     for (i = Times; i > 0; i--)
     {
         OpenLED(LEDx_PORT, LEDx_PIN);
-        Delay(DelayTime);
+        Delay_ms(DelayTime);
         CloseLED(LEDx_PORT, LEDx_PIN);
-        Delay(DelayTime);
+        Delay_ms(DelayTime);
     }
 }
 

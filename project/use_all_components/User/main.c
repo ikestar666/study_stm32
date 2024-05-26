@@ -9,34 +9,35 @@ volatile int ErrorKeyPressed = 0;
 
 void TestLED(void)
 {
+    uint32_t time = 200;
     OpenRedLED();
-    Delay(5000000);
+    Delay_ms(time);
 
     OpenGreenLED();
-    Delay(5000000);
+    Delay_ms(time);
 
     OpenBlueLED();
-    Delay(5000000);
+    Delay_ms(time);
 
     OpenCyanLED();
-    Delay(5000000);
+    Delay_ms(time);
 
     OpenMagentaLED();
-    Delay(5000000);
+    Delay_ms(time);
 
     OpenYellowLED();
-    Delay(5000000);
+    Delay_ms(time);
 
     OpenWhiteLED();
-    Delay(5000000);
+    Delay_ms(time);
     CloseAllLED();
-    Delay(5000000);
+    Delay_ms(time);
     OpenWhiteLED();
-    Delay(5000000);
+    Delay_ms(time);
     CloseAllLED();
-    Delay(5000000);
+    Delay_ms(time);
     OpenWhiteLED();
-    Delay(5000000);
+    Delay_ms(time);
     CloseAllLED();
 }
 
@@ -47,33 +48,36 @@ int PressKey(GPIO_TypeDef *KEYx_PORT, uint16_t KEYx_PIN,
     int TimePassed = 0;
     while (IsKeyUP(KEYx_PORT, KEYx_PIN))
     {
-        Blink(LED_BLUE_PORT, LED_BLUE_PIN, 1, 2000000);
+        Blink(LED_BLUE_PORT, LED_BLUE_PIN, 1, 1000);
         TimePassed += 1;
         // 超过调用单次最大等待时常
         if (TimePassed >= WaitTime)
         {
-            Blink(LED_RED_PORT, LED_RED_PIN, 6, 500000);
+            Blink(LED_RED_PORT, LED_RED_PIN, 6, 1000);
             return 0;
         }
         // 如果错误的按键被按下，则需要重新输入密码
         if (ErrorKeyPressed == 1)
         {
-            Blink(LED_RED_PORT, LED_RED_PIN, 6, 500000);
+            OpenRedLED();
+            Delay_ms(2000);
+            CloseAllLED();
+            Delay_ms(1000);
             ErrorKeyPressed = 0;
             return 0;
         }
     }
     while (IsKeyDown(KEYx_PORT, KEYx_PIN))
     {
+        Blink(LED_BLUE_PORT, LED_BLUE_PIN, 1, 200);
         TimePassed += 1;
-        Delay(1000000);
         if (TimePassed >= WaitTime)
         {
-            Blink(LED_RED_PORT, LED_RED_PIN, 6, 500000);
+            Blink(LED_RED_PORT, LED_RED_PIN, 6, 200);
             return 0;
         }
     }
-    CloseLED(LEDx_PORT, LEDx_PIN);
+    CloseAllLED();
     return 1;
 }
 
@@ -114,7 +118,7 @@ void ShowMusicLed(uint16_t *music, uint16_t music_len)
         {
             CloseAllLED();
         }
-        Delay(4000000);
+        Delay_ms(100);
     }
     CloseAllLED();
 }
@@ -149,25 +153,42 @@ int PassCodeCheck()
         // 等待按到正确的按钮，或者超时
         if (PressKey(Key_xPort, Key_xPin, LED_RED_PORT, LED_RED_PIN))
         {
-            OpenYellowLED();
-            Delay(2000000);
+            OpenWhiteLED();
+            Delay_ms(2000);
             CloseAllLED();
+            Delay_ms(1000);
         }
         else
         {
             // 超时没有输入或输入位错误的按钮，则重置密码输入开关
-            i = 0;
-            if (MaxTryTime-- <= 0) // 输入错误次数过多，则会暂时锁机
+            i -= 1;
+            if (--MaxTryTime <= 0) // 输入错误次数过多，则会暂时锁机
             {
                 OpenMagentaLED();
-                Delay(1000000);
-                MaxTryTime = 3;
+                Delay_ms(200);
+
                 CloseAllLED();
+                Delay_ms(200);
+
+                OpenMagentaLED();
+                Delay_ms(200);
+
+                CloseAllLED();
+                Delay_ms(200);
+
+                OpenMagentaLED();
+                Delay_ms(200);
+                CloseAllLED();
+                Delay_ms(200);
+
+                MaxTryTime = 3;
+                i = -1;
+
             }
         }
     }
 
-    Blink(LED_GREEN_PORT, LED_GREEN_PIN, 3, 2000000);
+    Blink(LED_GREEN_PORT, LED_GREEN_PIN, 6, 100);
 
     return 1;
 }
@@ -216,5 +237,5 @@ int main(void)
         CloseAllLED();
     }
 
-    Blink(LED_RED_PORT, LED_RED_PIN, 3, 2000000);
+    Blink(LED_GREEN_PORT, LED_GREEN_PIN, 3, 500);
 }

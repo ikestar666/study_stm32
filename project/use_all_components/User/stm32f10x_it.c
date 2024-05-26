@@ -23,6 +23,9 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_it.h"
+#include "led.h"
+#include "key.h"
+#include "utils.h"
 
 /** @addtogroup STM32F10x_StdPeriph_Template
  * @{
@@ -147,18 +150,20 @@ extern int ErrorKeyPressed;
 void EXTI0_IRQHandler(void)
 {
     ErrorKeyPressed = 1;
-    OpenWhiteLED();
-    Delay(4000000);
-    CloseAllLED();
+    while (IsKeyDown(KEY_1_PORT, KEY_1_PIN))
+    {
+        Blink(LED_BLUE_PORT, LED_BLUE_PIN, 1, 200);
+    }
     EXTI_ClearFlag(EXTI_Line0);
 }
 
 void EXTI15_10_IRQHandler(void)
 {
     ErrorKeyPressed = 1;
-    OpenWhiteLED();
-    Delay(4000000);
-    CloseAllLED();
+    while (IsKeyDown(KEY_2_PORT, KEY_2_PIN))
+    {
+        Blink(LED_BLUE_PORT, LED_BLUE_PIN, 1, 200);
+    }
     EXTI_ClearFlag(EXTI_Line13);
 }
 

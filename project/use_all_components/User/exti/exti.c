@@ -42,7 +42,7 @@ void KEY1_EXTI_Cmd(FunctionalState cmd)
     EXTI_InitTypeDef EXTI_InitStruct;
     EXTI_InitStruct.EXTI_Line = EXTI_Line0;
     EXTI_InitStruct.EXTI_Mode = EXTI_Mode_Interrupt;
-    EXTI_InitStruct.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
+    EXTI_InitStruct.EXTI_Trigger = EXTI_Trigger_Rising;
     EXTI_InitStruct.EXTI_LineCmd = cmd;
 
     EXTI_Init(&EXTI_InitStruct);
@@ -57,7 +57,7 @@ void KEY2_EXTI_Cmd(FunctionalState cmd)
     EXTI_InitTypeDef EXTI_InitStruct;
     EXTI_InitStruct.EXTI_Line = EXTI_Line13;
     EXTI_InitStruct.EXTI_Mode = EXTI_Mode_Interrupt;
-    EXTI_InitStruct.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
+    EXTI_InitStruct.EXTI_Trigger = EXTI_Trigger_Rising;
     EXTI_InitStruct.EXTI_LineCmd = cmd;
 
     EXTI_Init(&EXTI_InitStruct);
