@@ -26,6 +26,7 @@
 #include "led.h"
 #include "key.h"
 #include "utils.h"
+#include "usart.h"
 
 /** @addtogroup STM32F10x_StdPeriph_Template
  * @{
@@ -145,11 +146,11 @@ void SysTick_Handler(void) {}
 {
 }*/
 
-extern int ErrorKeyPressed;
+extern int KeyPressed;
 
 void EXTI0_IRQHandler(void)
 {
-    ErrorKeyPressed = 1;
+    KeyPressed = 1;
     while (IsKeyDown(KEY_1_PORT, KEY_1_PIN))
     {
         Blink(LED_BLUE_PORT, LED_BLUE_PIN, 1, 200);
@@ -159,12 +160,22 @@ void EXTI0_IRQHandler(void)
 
 void EXTI15_10_IRQHandler(void)
 {
-    ErrorKeyPressed = 1;
+    KeyPressed = 2;
     while (IsKeyDown(KEY_2_PORT, KEY_2_PIN))
     {
         Blink(LED_BLUE_PORT, LED_BLUE_PIN, 1, 200);
     }
     EXTI_ClearFlag(EXTI_Line13);
+}
+
+void USART1_IRQHandler(void)
+{
+    uint8_t ucTemp;
+    if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+    {
+        ucTemp = USART_ReceiveData(USART1);
+        USART_SendData(USART1, ucTemp);
+    }
 }
 
 /**

@@ -1,32 +1,10 @@
 #include "exti.h"
-
-void KEY_NVIC_Config()
-{
-    // NVIC 使能按键中断
-    NVIC_InitTypeDef KEY1_NVIC_InitStruct;
-    NVIC_InitTypeDef KEY2_NVIC_InitStruct;
-
-    // 配置中断优先级
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
-
-
-    KEY1_NVIC_InitStruct.NVIC_IRQChannel = EXTI0_IRQn;
-    KEY1_NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 0;
-    KEY1_NVIC_InitStruct.NVIC_IRQChannelSubPriority = 2;
-    KEY1_NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
-    NVIC_Init(&KEY1_NVIC_InitStruct);
-
-    KEY2_NVIC_InitStruct.NVIC_IRQChannel = EXTI15_10_IRQn;
-    KEY2_NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 0;
-    KEY2_NVIC_InitStruct.NVIC_IRQChannelSubPriority = 3;
-    KEY2_NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
-    NVIC_Init(&KEY2_NVIC_InitStruct);
-}
+#include "usart.h"
 
 void KEY_EXTI_Init()
 {
 
-    //由于需要操作AFIO的EXTICR寄存器，选择中断线对应的端口，因此需要施恩使能AFIO时钟
+    //由于需要操作AFIO的EXTICR寄存器，选择中断线对应的端口，因此需要使能AFIO时钟
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
 
     GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource0);
