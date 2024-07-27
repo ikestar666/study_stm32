@@ -1,0 +1,30 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "D:/Keil_v5/ARM/ARMCC/bin/armcc.exe",
+            "args": [
+                "-I${workspaceFolder}/User/include",
+                "-I${workspaceFolder}/User/src",
+                "-I${workspaceFolder}/Libraries/CMSIS",
+                "-I${workspaceFolder}/Libraries/STM32F10x_StdPeriph_Driver/inc",
+                "-DSTM32F10X_HD",
+                "-DUSE_STDPERIPH_DRIVER",
+                "-D__STATIC_INLINE=static inline",
+                "-o",
+                "${workspaceFolder}/build/use_all_components/elf",
+                "${workspaceFolder}/User/src/main.c"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$armcc"
+            ],
+            "detail": "Generated task for keil ARMCC project build."
+        }
+    ]
+}

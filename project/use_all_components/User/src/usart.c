@@ -8,13 +8,14 @@ void MyUSART_Init(void)
     GPIO_InitTypeDef USARTx_TX_InitStruct;
     USART_InitTypeDef USARTx_InitStruct;
 
+
     // 配置时钟
     // USART
     USARTx_CLK_CMD(USARTx_CLK, ENABLE);
     // GPIO RX
     USARTx_GPIO_CLK_CMD(USARTx_GPIO_CLK, ENABLE);
     // AFIO TX
-    USARTx_AFIO_CLK_CMD(USARTx_AFIO_CLK, ENABLE);
+    // USARTx_AFIO_CLK_CMD(USARTx_AFIO_CLK, ENABLE);
 
     // 配置IO
     //RX
@@ -24,7 +25,7 @@ void MyUSART_Init(void)
     //TX
     USARTx_TX_InitStruct.GPIO_Mode = GPIO_Mode_AF_PP;
     USARTx_TX_InitStruct.GPIO_Pin = USARTx_TX_PIN;
-    USARTx_TX_InitStruct.GPIO_Speed = GPIO_Speed_10MHz;
+    USARTx_TX_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(USARTx_TX_PORT, &USARTx_TX_InitStruct);
 
     // 配置USART
@@ -33,11 +34,14 @@ void MyUSART_Init(void)
     USARTx_InitStruct.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
     USARTx_InitStruct.USART_Parity = USART_Parity_Even;
     USARTx_InitStruct.USART_StopBits = USART_StopBits_1;
-    USARTx_InitStruct.USART_WordLength = USART_WordLength_9b;
+    USARTx_InitStruct.USART_WordLength = USART_WordLength_8b;
+    USARTx_InitStruct.USART_Parity = USART_Parity_No ;
     USART_Init(USARTx, &USARTx_InitStruct);
 
     // 使能USART
     USART_Cmd(USARTx, ENABLE);
+
+    printf("USART初始化成功\n");
 }
 
 void USART_TI_Cmd(void)

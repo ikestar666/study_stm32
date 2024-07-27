@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "name": "Keil ARMCC",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "D:/Keil_v5/ARM/INC",
+                "${workspaceFolder}/Libraries/CMSIS/",
+                "${workspaceFolder}/Libraries/STM32F10x_StdPeriph_Driver/inc",
+                "${workspaceFolder}/User/",
+                "${workspaceFolder}/User/include/"
+            ],
+            "defines": [
+                "STM32F103VE",
+                "STM32F10X_HD",
+                "USE_STDPERIPH_DRIVER"
+            ],
+            "compilerPath": "D:/Keil_v5/ARM/ARMCC/bin/armcc.exe",
+            "cStandard": "c99",
+            "cppStandard": "c++11"
+        }
+    ],
+    "version": 4
+}

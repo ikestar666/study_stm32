@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_HD,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\Libraries\CMSIS;..\Libraries\STM32F10x_StdPeriph_Driver\inc;..\User;..\User\led;..\User\key;..\User\utils;..\User\exti;..\User\usart;..\User\nvic</IncludePath>
+              <IncludePath>..\Libraries\CMSIS;..\Libraries\STM32F10x_StdPeriph_Driver\inc;..\User;..\User\led;..\User\key;..\User\utils;..\User\exti;..\User\usart;..\User\nvic;..\User\i2c;..\User\include</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -409,44 +409,54 @@
           <GroupName>USER</GroupName>
           <Files>
             <File>
-              <FileName>led.c</FileName>
+              <FileName>stm32f10x_can.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\User\led\led.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_it.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\User\stm32f10x_it.c</FilePath>
-            </File>
-            <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\User\main.c</FilePath>
-            </File>
-            <File>
-              <FileName>key.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\User\key\key.c</FilePath>
-            </File>
-            <File>
-              <FileName>utils.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\User\utils\utils.c</FilePath>
+              <FilePath>..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_can.c</FilePath>
             </File>
             <File>
               <FileName>exti.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\User\exti\exti.c</FilePath>
+              <FilePath>..\User\src\exti.c</FilePath>
             </File>
             <File>
-              <FileName>usart.c</FileName>
+              <FileName>key.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\User\usart\usart.c</FilePath>
+              <FilePath>..\User\src\key.c</FilePath>
+            </File>
+            <File>
+              <FileName>led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\src\led.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\src\main.c</FilePath>
             </File>
             <File>
               <FileName>nvic.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\User\nvic\nvic.c</FilePath>
+              <FilePath>..\User\src\nvic.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_it.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\src\stm32f10x_it.c</FilePath>
+            </File>
+            <File>
+              <FileName>usart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\src\usart.c</FilePath>
+            </File>
+            <File>
+              <FileName>utils.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\src\utils.c</FilePath>
+            </File>
+            <File>
+              <FileName>i2c_ee.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\src\i2c_ee.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -467,11 +477,6 @@
               <FileName>stm32f10x_bkp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_bkp.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_can.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_can.c</FilePath>
             </File>
             <File>
               <FileName>stm32f10x_cec.c</FileName>

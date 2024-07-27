@@ -5,7 +5,11 @@
 #include "stm32f10x.h" // 相当于51单片机中的  #include <reg51.h>
 #include "usart.h"
 #include "utils.h"
+#include "i2c_ee.h"
 #include <stdio.h>
+
+
+
 
 // 定义全局变量
 volatile int KeyPressed = 0;
@@ -161,23 +165,29 @@ int PassCodeCheck()
 // 通过接受窗口输入实现
 int PassCodeCheck()
 {
-    char *PassCode = "112122";
-    char inputPassCode[7] = {'0', '0', '0', '0', '0', '0', '\0'};
-    char *str = inputPassCode;
+    u8 PassCode[6] = {0};
+    u16 inputPassCode[6] = {0};
     int i = 0;
-    printf("初始密码为");
-    printf(str);
-    printf("\n");
+    I2C_EEPROM_SequentialRead(PassCode, 2, 6);
+
     while (1)
     {
         i = 0;
-        USART_ReceiveString(USARTx, str);
+        for (i = 0; i < 6; i++)
+        {
+            inputPassCode[i] = USART_ReceiveByte(USARTx);
+        }
         printf("您输入的密码为");
-        printf(str);
-        while (i < 6 && *(str + i) == PassCode[i])
+        for (i = 0; i < 6; i++)
+        {
+            printf("%d ", inputPassCode[i]);
+        }
+        i = 0;
+        while (inputPassCode[i] == PassCode[i] && i < 6)
         {
             i++;
         }
+
         if (i == 6)
         {
             printf("密码正确\n");
@@ -246,6 +256,11 @@ int main(void)
     TestLED();
     USART_SentString(USARTx, "LED功能正常\n");
 
+    I2C_EEPROM_Configu();
+    USART_SentString(USARTx, "I2C初始化成功\n");
+    // I2C_EEPROM_BufferWrite(PassCode, 2, 6);
+
+
     USART_SentString(USARTx, "请输出开机密码：\n");
 
     // USART 中断配置(暂不)
@@ -264,4 +279,55 @@ int main(void)
 
     USART_SentString(USARTx, "将在绿灯闪烁三次后关机\n");
     Blink(LED_GREEN_PORT, LED_GREEN_PIN, 3, 500);
+}
+
+
+
+int testEEPROM()
+{
+
+    uint8_t writeBuff[10] = {7, 6, 5, 4, 3, 2, 1, 0};
+    uint8_t readBuff[10] = {0};
+    uint8_t writeAllBuff[128] = {0};
+    int i;
+    int j;
+
+    for (j = 0; j < 128; j++)
+    {
+        writeAllBuff[j] = j * 2;
+    }
+
+    // 初始化外设
+    MyUSART_Init();
+
+    I2C_EEPROM_Configu();
+
+//    // 测试读写单个字节
+    I2C_EEPROM_ByteWrite(125, 0);
+    I2C_EE_WaitEepromStandbyState();
+
+    // 测试读写一页
+    I2C_EEPROM_PageWrite(writeBuff, 0, 8);
+    I2C_EE_WaitEepromStandbyState();
+
+    // 测试随机写任意字符
+    I2C_EEPROM_BufferWrite(writeAllBuff, 0, 128);
+
+    I2C_EEPROM_SequentialRead(readBuff, 0, 128);
+    for (i = 0; i < 128; i++)
+    {
+        if (readBuff[i] == writeAllBuff[i])
+        {
+            printf("%d ", readBuff[i]);
+        }
+        else
+        {
+            printf("数据没对上");
+            break;
+        }
+    }
+    printf("数据都对上了");
+
+    while (1)
+    {}
 }
