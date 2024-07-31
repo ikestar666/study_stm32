@@ -183,14 +183,14 @@ void I2C_EEPROM_BufferWrite(uint8_t *pBuffer, uint8_t addr, uint8_t numberToWrit
     while (needByteWriteBefore--)
     {
         I2C_EEPROM_ByteWrite(*pBuffer, addr);
-			I2C_EE_WaitEepromStandbyState();
+        I2C_EE_WaitEepromStandbyState();
         pBuffer ++;
         addr++;
     }
     while (pageWriteSize--)
     {
         I2C_EEPROM_PageWrite(pBuffer, addr, 8);
-			I2C_EE_WaitEepromStandbyState();
+        I2C_EE_WaitEepromStandbyState();
         pBuffer += 8;
         addr += 8;
     }
@@ -268,7 +268,7 @@ uint32_t I2C_EEPROM_SequentialRead(uint8_t *pdata, uint8_t addr, u16 numberToRea
         // 准备读取最后一个字节数据时，配置发送NA信号
         if (numberToRead == 1)
         {
-//            printf("进来了");
+            // printf("进来了");
             I2C_AcknowledgeConfig(EEPROM_I2Cx, DISABLE);
             I2C_GenerateSTOP(EEPROM_I2Cx, ENABLE);
         }

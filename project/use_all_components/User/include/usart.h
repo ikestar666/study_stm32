@@ -5,15 +5,15 @@
 #include <stdio.h>
 
 // ∫Í∂®“Â
-#define USARTx                  USART1
-#define USARTx_CLK_CMD          RCC_APB2PeriphClockCmd
-#define USARTx_CLK              RCC_APB2Periph_USART1
-#define USARTx_IRQ              USART1_IRQn
+#define USARTx                  USART2
+#define USARTx_CLK_CMD          RCC_APB1PeriphClockCmd
+#define USARTx_CLK              RCC_APB1Periph_USART2
+#define USARTx_IRQ              USART2_IRQn
 
 #define USARTx_TX_PORT          GPIOA
 #define USARTx_RX_PORT          GPIOA
-#define USARTx_RX_PIN           GPIO_Pin_10
-#define USARTx_TX_PIN           GPIO_Pin_9
+#define USARTx_RX_PIN           GPIO_Pin_3
+#define USARTx_TX_PIN           GPIO_Pin_2
 #define USARTx_GPIO_CLK_CMD     RCC_APB2PeriphClockCmd
 #define USARTx_GPIO_CLK         RCC_APB2Periph_GPIOA
 #define USARTx_AFIO_CLK_CMD         RCC_APB2PeriphClockCmd

@@ -6,6 +6,7 @@
 #include "usart.h"
 #include "utils.h"
 #include "i2c_ee.h"
+#include "spi_flash.h"
 #include <stdio.h>
 
 
@@ -48,11 +49,15 @@ void TestLED(void)
     CloseAllLED();
 }
 
-void ShowMusicLed(uint16_t *music, uint16_t music_len)
+void ShowMusicLed(uint8_t *music, uint16_t music_len)
 {
     int i;
     for (i = 0; i < music_len; i++)
     {
+        if (music[i] == 0xFF)
+        {
+            break;
+        }
         if (music[i] == 1)
         {
             OpenRedLED();
@@ -198,6 +203,11 @@ int PassCodeCheck()
         {
             printf("密码错误，请重试\n");
             Blink(LED_RED_PORT, LED_RED_PIN, 3, 200);
+            printf("开机密码为");
+            for (i = 0; i < 6; i++)
+            {
+                printf("%d ", PassCode[i]);
+            }
         }
     }
     return 1;
@@ -207,30 +217,30 @@ int PassCodeCheck()
 int main(void)
 {
     uint16_t res = 0;
-    uint16_t music[] =
-    {
-        // 前奏
-        6, 6, 6, 6, 5, 3, 3, 2, 3, 2, 1, 6, 6, 6, 6, 5, 3, 3, 2, 3, 2, 1,
+    uint8_t music[256] = {0};
+//    {
+//        // 前奏
+//        6, 6, 6, 6, 5, 3, 3, 2, 3, 2, 1, 6, 6, 6, 6, 5, 3, 3, 2, 3, 2, 1,
 
-        // 主歌
-        6, 5, 6, 1, 3, 3, 2, 3, 2, 1, 6, 5, 6, 1, 3, 3, 2, 3, 2, 1, 6, 5, 6, 1, 3,
-        3, 2, 3, 2, 1, 6, 5, 6, 1, 3, 3, 2, 3, 2, 1,
+//        // 主歌
+//        6, 5, 6, 1, 3, 3, 2, 3, 2, 1, 6, 5, 6, 1, 3, 3, 2, 3, 2, 1, 6, 5, 6, 1, 3,
+//        3, 2, 3, 2, 1, 6, 5, 6, 1, 3, 3, 2, 3, 2, 1,
 
-        // 副歌
-        6, 5, 6, 1, 3, 2, 1, 2, 3, 2, 1, 6, 5, 6, 1, 3, 2, 1, 2, 3, 2, 1, 6, 5, 6,
-        1, 3, 2, 1, 2, 3, 2, 1, 6, 5, 6, 1, 3, 2, 1, 2, 3, 2, 1,
+//        // 副歌
+//        6, 5, 6, 1, 3, 2, 1, 2, 3, 2, 1, 6, 5, 6, 1, 3, 2, 1, 2, 3, 2, 1, 6, 5, 6,
+//        1, 3, 2, 1, 2, 3, 2, 1, 6, 5, 6, 1, 3, 2, 1, 2, 3, 2, 1,
 
-        // 过渡
-        5, 5, 6, 5, 3, 2, 1, 2, 3, 2, 1, 5, 5, 6, 5, 3, 2, 1, 2, 3, 2, 1,
+//        // 过渡
+//        5, 5, 6, 5, 3, 2, 1, 2, 3, 2, 1, 5, 5, 6, 5, 3, 2, 1, 2, 3, 2, 1,
 
-        // 主歌
-        6, 5, 6, 1, 3, 3, 2, 3, 2, 1, 6, 5, 6, 1, 3, 3, 2, 3, 2, 1, 6, 5, 6, 1, 3,
-        3, 2, 3, 2, 1, 6, 5, 6, 1, 3, 3, 2, 3, 2, 1,
+//        // 主歌
+//        6, 5, 6, 1, 3, 3, 2, 3, 2, 1, 6, 5, 6, 1, 3, 3, 2, 3, 2, 1, 6, 5, 6, 1, 3,
+//        3, 2, 3, 2, 1, 6, 5, 6, 1, 3, 3, 2, 3, 2, 1,
 
-        // 副歌
-        6, 5, 6, 1, 3, 2, 1, 2, 3, 2, 1, 6, 5, 6, 1, 3, 2, 1, 2, 3, 2, 1, 6, 5, 6,
-        1, 3, 2, 1, 2, 3, 2, 1, 6, 5, 6, 1, 3, 2, 1, 2, 3, 2, 1
-    };
+//        // 副歌
+//        6, 5, 6, 1, 3, 2, 1, 2, 3, 2, 1, 6, 5, 6, 1, 3, 2, 1, 2, 3, 2, 1, 6, 5, 6,
+//        1, 3, 2, 1, 2, 3, 2, 1, 6, 5, 6, 1, 3, 2, 1, 2, 3, 2, 1
+//    };
 
     // NVIC中断配置
     MyNVIC_Config();
@@ -260,6 +270,10 @@ int main(void)
     USART_SentString(USARTx, "I2C初始化成功\n");
     // I2C_EEPROM_BufferWrite(PassCode, 2, 6);
 
+    SPI_FLASH_Configu();
+    USART_SentString(USARTx, "SPI初始化成功\n");
+    SPI_FLASH_BufferRead(music, 0x00, 1024);
+
 
     USART_SentString(USARTx, "请输出开机密码：\n");
 
@@ -272,7 +286,7 @@ int main(void)
         USART_SentString(USARTx, "开机密码正确，已开机\n");
 
         USART_SentString(USARTx, "请欣赏灯光秀\n");
-        ShowMusicLed(music, 121);
+        ShowMusicLed(music, 1024);
         CloseAllLED();
         USART_SentString(USARTx, "灯光秀展示完毕\n");
     }
@@ -289,6 +303,7 @@ int testEEPROM()
     uint8_t writeBuff[10] = {7, 6, 5, 4, 3, 2, 1, 0};
     uint8_t readBuff[10] = {0};
     uint8_t writeAllBuff[128] = {0};
+    u8 mm[] = {1, 2, 3, 3, 2, 1};
     int i;
     int j;
 
@@ -328,6 +343,101 @@ int testEEPROM()
     }
     printf("数据都对上了");
 
+    I2C_EEPROM_BufferWrite(mm, 2, 6);
+
     while (1)
     {}
+}
+
+int testFLASH()
+{
+
+
+    uint8_t music[] =
+    {
+        // 前奏
+        6, 6, 6, 6, 5, 3, 3, 2, 3, 2, 1, 6, 6, 6, 6, 5, 3, 3, 2, 3, 2, 1,
+
+        // 主歌
+        6, 5, 6, 1, 3, 3, 2, 3, 2, 1, 6, 5, 6, 1, 3, 3, 2, 3, 2, 1, 6, 5, 6, 1, 3,
+        3, 2, 3, 2, 1, 6, 5, 6, 1, 3, 3, 2, 3, 2, 1,
+
+        // 副歌
+        6, 5, 6, 1, 3, 2, 1, 2, 3, 2, 1, 6, 5, 6, 1, 3, 2, 1, 2, 3, 2, 1, 6, 5, 6,
+        1, 3, 2, 1, 2, 3, 2, 1, 6, 5, 6, 1, 3, 2, 1, 2, 3, 2, 1,
+
+        // 过渡
+        5, 5, 6, 5, 3, 2, 1, 2, 3, 2, 1, 5, 5, 6, 5, 3, 2, 1, 2, 3, 2, 1,
+
+        // 主歌
+        6, 5, 6, 1, 3, 3, 2, 3, 2, 1, 6, 5, 6, 1, 3, 3, 2, 3, 2, 1, 6, 5, 6, 1, 3,
+        3, 2, 3, 2, 1, 6, 5, 6, 1, 3, 3, 2, 3, 2, 1,
+
+        // 副歌
+        6, 5, 6, 1, 3, 2, 1, 2, 3, 2, 1, 6, 5, 6, 1, 3, 2, 1, 2, 3, 2, 1, 6, 5, 6,
+        1, 3, 2, 1, 2, 3, 2, 1, 6, 5, 6, 1, 3, 2, 1, 2, 3, 2, 1
+    };
+    const u8 bufferSize = countOfArr(music);
+    u8 pData[bufferSize] = {0};
+    u32 jedecId;
+    u16 i, j = 0;
+
+
+    // 初始化外设
+    MyUSART_Init();
+    SPI_FLASH_Configu();
+    jedecId = SPI_FLASH_ReadDeviceID();
+    printf("jedecId=%x", jedecId);
+    // 现在开始读前两个page区的内容
+    SPI_FLASH_BufferRead(pData, 0x00, bufferSize);
+    printf("第一个页的内容\n");
+    for (i = 0; i < bufferSize; i++)
+    {
+        printf("%x ", pData[i]);
+    }
+    // 擦除第一个扇区
+    SPI_FLASH_EraseSector(0x00);
+
+    // 现在开始读前两个page区的内容
+    SPI_FLASH_BufferRead(pData, 0x00, bufferSize);
+    printf("擦除后第一个页的内容\n");
+    for (i = 0; i < bufferSize; i++)
+    {
+        printf("%x ", pData[i]);
+    }
+//
+    SPI_FLASH_BufferWrite(music, 0x00, bufferSize);
+
+    SPI_FLASH_BufferRead(pData, 0x00, bufferSize);
+
+
+    for (i = 0; i < bufferSize; i++)
+    {
+        if (music[i] == pData[i])
+        {
+            printf("%x ", pData[i]);
+        }
+        else
+        {
+            printf("数据没对上");
+            break;
+        }
+    }
+    if (i ==  bufferSize)
+    {
+        printf("数据都对上了");
+    }
+
+    while (1)
+    {}
+
+}
+
+
+
+int main1()
+{
+    // testFLASH();
+
+    testEEPROM();
 }

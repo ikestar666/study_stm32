@@ -173,7 +173,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup SPI_Clock_Phase 
+/** @defgroup SPI_CPHA_2Edge 
   * @{
   */
 

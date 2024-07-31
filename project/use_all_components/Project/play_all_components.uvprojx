@@ -458,6 +458,11 @@
               <FileType>1</FileType>
               <FilePath>..\User\src\i2c_ee.c</FilePath>
             </File>
+            <File>
+              <FileName>spi_flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\src\spi_flash.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
