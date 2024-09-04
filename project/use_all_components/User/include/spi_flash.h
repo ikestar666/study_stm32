@@ -90,5 +90,6 @@ void SPI_FLASH_PageWrite(u8 *pData, u32 writeAddr, u16 numberToWrite);
 void SPI_FLASH_BufferWrite(u8 *pData, u32 writeAddr, u16 numberToWrite);
 void SPI_FLASH_BufferRead(u8 *pBuffer, u32 readAddr, u16 numberToRead);
 void SPI_FLASH_Configu(void);
+void SPI_FLASH_WakeUp(void);
 
 #endif

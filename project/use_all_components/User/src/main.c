@@ -7,6 +7,7 @@
 #include "utils.h"
 #include "i2c_ee.h"
 #include "spi_flash.h"
+#include "ff.h"
 #include <stdio.h>
 
 
@@ -14,6 +15,17 @@
 
 // 定义全局变量
 volatile int KeyPressed = 0;
+
+FATFS fs;                                                   /* FatFs文件系统对象 */
+MKFS_PARM mkfs_parm;
+FIL fnew;                                                   /* 文件对象 */
+FRESULT res_flash;                /* 文件操作结果 */
+UINT fnum;                                /* 文件成功读写数量 */
+BYTE ReadBuffer[1024] = {0};      /* 读缓冲区 */
+BYTE WriteBuffer[] =              /* 写缓冲区*/
+    "欢迎使用野火STM32开发板 今天是个好日子，新建文件系统测试文件\r\n";
+BYTE work[4096] = {0};
+
 
 void TestLED(void)
 {
@@ -95,78 +107,6 @@ void ShowMusicLed(uint8_t *music, uint16_t music_len)
     CloseAllLED();
 }
 
-/*
-int PassCodeCheck()
-{
-
-    uint16_t PassCode[6] = {1, 1, 2, 1, 2, 2};
-    uint16_t MaxTryTime = 3;
-    int i;
-    for (i = 0; i < 6; i++)
-    {
-        while (KeyPressed == 0)
-        {
-            Blink(LED_BLUE_PORT, LED_BLUE_PIN, 1, 1000);
-        }
-
-        // 按键正确
-        if (PassCode[i] == KeyPressed)
-        {
-            OpenWhiteLED();
-            Delay_ms(500);
-            CloseAllLED();
-            Delay_ms(500);
-            // 打印密码
-            if (KeyPressed == 1)
-            {
-                USART_SentString(USARTx, "1 ");
-            }
-            else
-            {
-                USART_SentString(USARTx, "2 ");
-            }
-        }
-        else
-        {
-            OpenYellowLED();
-            Delay_ms(500);
-            CloseAllLED();
-            Delay_ms(500);
-            i -= 1;
-            if (--MaxTryTime <= 0) // 输入错误次数过多，则会暂时锁机
-            {
-                OpenMagentaLED();
-                Delay_ms(200);
-
-                CloseAllLED();
-                Delay_ms(200);
-
-                OpenMagentaLED();
-                Delay_ms(200);
-
-                CloseAllLED();
-                Delay_ms(200);
-
-                OpenMagentaLED();
-                Delay_ms(200);
-                CloseAllLED();
-                Delay_ms(200);
-
-                MaxTryTime = 3;
-                i = -1;
-                USART_SentString(USARTx, "\n");
-
-            }
-        }
-        KeyPressed = 0;
-    }
-
-    Blink(LED_GREEN_PORT, LED_GREEN_PIN, 6, 100);
-
-    return 1;
-}
-*/
-
 // 通过接受窗口输入实现
 int PassCodeCheck()
 {
@@ -214,33 +154,10 @@ int PassCodeCheck()
 }
 
 
-int main(void)
+int main1(void)
 {
     uint16_t res = 0;
     uint8_t music[256] = {0};
-//    {
-//        // 前奏
-//        6, 6, 6, 6, 5, 3, 3, 2, 3, 2, 1, 6, 6, 6, 6, 5, 3, 3, 2, 3, 2, 1,
-
-//        // 主歌
-//        6, 5, 6, 1, 3, 3, 2, 3, 2, 1, 6, 5, 6, 1, 3, 3, 2, 3, 2, 1, 6, 5, 6, 1, 3,
-//        3, 2, 3, 2, 1, 6, 5, 6, 1, 3, 3, 2, 3, 2, 1,
-
-//        // 副歌
-//        6, 5, 6, 1, 3, 2, 1, 2, 3, 2, 1, 6, 5, 6, 1, 3, 2, 1, 2, 3, 2, 1, 6, 5, 6,
-//        1, 3, 2, 1, 2, 3, 2, 1, 6, 5, 6, 1, 3, 2, 1, 2, 3, 2, 1,
-
-//        // 过渡
-//        5, 5, 6, 5, 3, 2, 1, 2, 3, 2, 1, 5, 5, 6, 5, 3, 2, 1, 2, 3, 2, 1,
-
-//        // 主歌
-//        6, 5, 6, 1, 3, 3, 2, 3, 2, 1, 6, 5, 6, 1, 3, 3, 2, 3, 2, 1, 6, 5, 6, 1, 3,
-//        3, 2, 3, 2, 1, 6, 5, 6, 1, 3, 3, 2, 3, 2, 1,
-
-//        // 副歌
-//        6, 5, 6, 1, 3, 2, 1, 2, 3, 2, 1, 6, 5, 6, 1, 3, 2, 1, 2, 3, 2, 1, 6, 5, 6,
-//        1, 3, 2, 1, 2, 3, 2, 1, 6, 5, 6, 1, 3, 2, 1, 2, 3, 2, 1
-//    };
 
     // NVIC中断配置
     MyNVIC_Config();
@@ -293,6 +210,8 @@ int main(void)
 
     USART_SentString(USARTx, "将在绿灯闪烁三次后关机\n");
     Blink(LED_GREEN_PORT, LED_GREEN_PIN, 3, 500);
+
+    return 0;
 }
 
 
@@ -380,7 +299,7 @@ int testFLASH()
     const u8 bufferSize = countOfArr(music);
     u8 pData[bufferSize] = {0};
     u32 jedecId;
-    u16 i, j = 0;
+    u16 i = 0;
 
 
     // 初始化外设
@@ -433,11 +352,128 @@ int testFLASH()
 
 }
 
-
-
-int main1()
+void testFatFs()
 {
-    // testFLASH();
+    int i = 0;
+    /* 初始化LED */
+    LEDInit();
+    OpenBlueLED();
 
-    testEEPROM();
+    /* 初始化调试串口，一般为串口1 */
+    MyUSART_Init();
+    printf("****** 这是一个SPI FLASH 文件系统实验 ******\r\n");
+    printf("\r\n 使用指南者底板时 左上角排针位置 不要将PC0盖有跳帽 防止影响PC0做SPIFLASH片选脚 \r\n");
+
+    //在外部SPI Flash挂载文件系统，文件系统挂载时会对SPI设备初始化
+    //初始化函数调用流程如下
+    //f_mount()->find_volume()->disk_initialize->SPI_FLASH_Init()
+    res_flash = f_mount(&fs, "1:", 1);
+
+//    /*----------------------- 格式化测试 -----------------*/
+//    /* 如果没有文件系统就格式化创建创建文件系统 */
+    if (res_flash == FR_NO_FILESYSTEM)
+    {
+        printf("》FLASH还没有文件系统，即将进行格式化...\r\n");
+        /* 格式化 */
+        res_flash = f_mkfs("1:", 0, work, sizeof work);
+
+        if (res_flash == FR_OK)
+        {
+            printf("》FLASH已成功格式化文件系统。\r\n");
+            SPI_FLASH_BufferRead(ReadBuffer, 512 << 12, 1024);
+            printf("第一个扇区=\r\n");
+            for (i = 0; i < 1024; i++)
+            {
+                printf("%x", ReadBuffer[i]);
+            }
+        }
+        else
+        {
+            OpenRedLED();
+            printf("《《格式化失败。》》 （%d)\r\n ", res_flash);
+            while (1);
+        }
+    }
+    else if (res_flash != FR_OK)
+    {
+        printf("》外部Flash挂载文件系统失败 （%d）\r\n", res_flash);
+        while (1);
+    }
+    else
+    {
+        printf("》文件系统挂载成功，可以进行读写测试\r\n");
+
+    }
+
+
+//    /*----------------------- 文件系统测试：写测试 -------------------*/
+//    /* 打开文件，每次都以新建的形式打开，属性为可写 */
+//    printf("\r\n****** 即将进行文件写入测试... ******\r\n");
+//    res_flash = f_open(&fnew, "1:FatFs读写测试文件.txt", FA_CREATE_ALWAYS | FA_WRITE);
+//    if (res_flash == FR_OK)
+//    {
+//        printf("》打开/创建FatFs读写测试文件.txt文件成功，向文件写入数据。\r\n");
+//        /* 将指定存储区内容写入到文件内 */
+//        res_flash = f_write(&fnew, WriteBuffer, sizeof(WriteBuffer), &fnum);
+//        if (res_flash == FR_OK)
+//        {
+//            printf("》文件写入成功，写入字节数据：%d\n", fnum);
+//            printf("》向文件写入的数据为：\r\n%s\r\n", WriteBuffer);
+//        }
+//        else
+//        {
+//            printf("！！文件写入失败：(%d)\n", res_flash);
+//        }
+//        /* 不再读写，关闭文件 */
+//        f_close(&fnew);
+//    }
+//    else
+//    {
+//        OpenRedLED();
+//        printf("！！打开/创建文件失败。:((%d))\r\n", res_flash);
+//    }
+
+    /*------------------- 文件系统测试：读测试 --------------------------*/
+    printf("****** 即将进行文件读取测试... ******\r\n");
+    res_flash = f_open(&fnew, "1:FatFs读写测试文件.txt", FA_OPEN_EXISTING | FA_READ);
+    if (res_flash == FR_OK)
+    {
+        OpenGreenLED();
+        printf("》打开文件成功。\r\n");
+        res_flash = f_read(&fnew, ReadBuffer, sizeof(ReadBuffer), &fnum);
+        if (res_flash == FR_OK)
+        {
+            printf("》文件读取成功,读到字节数据：%d\r\n", fnum);
+            printf("》读取得的文件数据为：\r\n%s \r\n", ReadBuffer);
+        }
+        else
+        {
+            printf("！！文件读取失败：(%d)\n", res_flash);
+        }
+    }
+    else
+    {
+        OpenRedLED();
+        printf("！！打开文件失败。\r\n");
+    }
+    /* 不再读写，关闭文件 */
+    f_close(&fnew);
+
+    /* 不再使用文件系统，取消挂载文件系统 */
+    f_mount(NULL, "1:", 1);
+
+    /* 操作完成，停机 */
+    while (1)
+    {
+    }
+}
+
+
+int main()
+{
+    //testFLASH();
+
+    //testEEPROM();
+
+    testFatFs();
 }

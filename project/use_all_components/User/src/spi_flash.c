@@ -157,6 +157,19 @@ void SPI_FLASH_EnableWrite()
     SPI_FLASH_CS_HIGH();
 }
 
+void SPI_FLASH_WakeUp(void)
+{
+
+    // 片选信号
+    SPI_FLASH_CS_LOW();
+
+    // 发送擦除指令
+    SPI_WriteByte(RELEASE_POWER_DOWN);
+
+    // 不进行片选
+    SPI_FLASH_CS_HIGH();
+}
+
 // 获取设备id
 u32 SPI_FLASH_ReadDeviceID(void)
 {

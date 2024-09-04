@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_HD,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\Libraries\CMSIS;..\Libraries\STM32F10x_StdPeriph_Driver\inc;..\User;..\User\led;..\User\key;..\User\utils;..\User\exti;..\User\usart;..\User\nvic;..\User\i2c;..\User\include</IncludePath>
+              <IncludePath>..\Libraries\CMSIS;..\Libraries\STM32F10x_StdPeriph_Driver\inc;..\User;..\User\led;..\User\key;..\User\utils;..\User\exti;..\User\usart;..\User\nvic;..\User\i2c;..\User\include;..\User\FATFS</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -463,6 +463,11 @@
               <FileType>1</FileType>
               <FilePath>..\User\src\spi_flash.c</FilePath>
             </File>
+            <File>
+              <FileName>fat.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\src\fat.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -577,6 +582,26 @@
               <FileName>stm32f10x_wwdg.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_wwdg.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>FATFS</GroupName>
+          <Files>
+            <File>
+              <FileName>ff.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\FATFS\ff.c</FilePath>
+            </File>
+            <File>
+              <FileName>diskio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\FATFS\diskio.c</FilePath>
+            </File>
+            <File>
+              <FileName>ffunicode.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\FATFS\ffunicode.c</FilePath>
             </File>
           </Files>
         </Group>
